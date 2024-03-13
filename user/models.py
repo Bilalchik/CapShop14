@@ -39,9 +39,7 @@ class MyUser(AbstractBaseUser):
     username = models.CharField(
         max_length=123
     )
-    email = models.EmailField(
-        unique=True
-    )
+    email = models.EmailField()
     phone_number = models.CharField(
         max_length=13,
         unique=True
@@ -103,3 +101,4 @@ class MyUser(AbstractBaseUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
