@@ -34,11 +34,11 @@ class ProfileListView(APIView):
         return Response(serializer.data)
 
     def patch(self, request):
-
-        serializer = ProfileUpdateSerializer(data=request.data, context={'request': request})
+        user = MyUser.objects.get(id=request.user.id)
+        serializer = ProfileUpdateSerializer(instance=user, data=request.data, partial=True,
+                                             context={'request': request})
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(status.HTTP_400_BAD_REQUEST)
-
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
