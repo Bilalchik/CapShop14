@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import Product, Brand, Category, Image, Storage, Color
+from .models import Product, Brand, Category, Image, Storage, Color, Favorite, Poster
 
 
 class BrandListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ('title', )
+        fields = ('title', 'logo')
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -27,7 +27,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             'description',
             'brands',
             'category',
-            'actual_price'
+            'actual_price',
+            'old_price'
         )
 
 
@@ -37,3 +38,37 @@ class StorageListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Storage
         fields = ('product', )
+
+
+class FavoriteCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'product')
+
+
+class ProductPosterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('title', 'main_cover')
+
+
+class StoragePosterListSerializer(serializers.ModelSerializer):
+    product = ProductPosterSerializer()
+
+    class Meta:
+        model = Storage
+        fields = ('product', )
+
+
+class PosterListSerializer(serializers.ModelSerializer):
+    product = StoragePosterListSerializer()
+
+    class Meta:
+        model = Poster
+        fields = '__all__'
+
+
+
