@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
     'django_filters',
     'user',
@@ -68,11 +69,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'capshop14',  # Имя вашей базы данных
+        'USER': 'capshopuser',      # Имя вашего пользователя
+        'PASSWORD': 'password',  # Ваш пароль
+        'HOST': 'localhost',   # Хост, на котором работает PostgreSQL
+        'PORT': '5433',            # Порт (по умолчанию 5432)
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

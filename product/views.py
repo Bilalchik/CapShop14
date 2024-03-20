@@ -1,11 +1,9 @@
 from django.db.models import F
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import Response, APIView
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import (
-    ListAPIView,
     RetrieveAPIView,
     CreateAPIView,
     UpdateAPIView,
@@ -31,6 +29,7 @@ from .models import (
     Poster
 )
 from .filters import StorageFilter
+from .paginations import StoragePagination
 
 
 # class ProductListView(APIView):
@@ -89,7 +88,7 @@ class ProductListView(ListCreateAPIView):
     search_fields = ['product__title']
     ordering_fields = ['product__actual_price']
     filterset_class = StorageFilter
-
+    pagination_class = StoragePagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
