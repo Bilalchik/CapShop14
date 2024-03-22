@@ -26,9 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # LIB
     'drf_yasg',
+    # REST
     'rest_framework',
     'django_filters',
+    # APPS
     'user',
     'product',
 ]
@@ -71,10 +74,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'capshop14',  # Имя вашей базы данных
-        'USER': 'capshopuser',      # Имя вашего пользователя
+        'USER': 'capshop14user',      # Имя вашего пользователя
         'PASSWORD': 'password',  # Ваш пароль
         'HOST': 'localhost',   # Хост, на котором работает PostgreSQL
-        'PORT': '5433',            # Порт (по умолчанию 5432)
+        'PORT': '5432',            # Порт (по умолчанию 5432)
     }
 }
 

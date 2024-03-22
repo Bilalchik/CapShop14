@@ -1,4 +1,5 @@
 from django.db.models import F
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import Response, APIView
 from rest_framework import filters
@@ -8,48 +9,25 @@ from rest_framework.generics import (
     CreateAPIView,
     UpdateAPIView,
     DestroyAPIView,
-    ListCreateAPIView
+    ListCreateAPIView, ListAPIView
 )
 
+
 from .serializers import (
-    ProductListSerializer,
     StorageListSerializer,
-    FavoriteCreateSerializer,
     PosterListSerializer,
     BrandListSerializer,
-    StorageCreateSerializer
+    StorageCreateSerializer,
+    BasketSerializer
 )
 from .models import (
-    Product,
     Brand,
-    Category,
-    Image,
     Storage,
-    Color,
-    Poster
+    Poster,
+    Basket,
 )
 from .filters import StorageFilter
 from .paginations import StoragePagination
-
-
-# class ProductListView(APIView):
-#
-#     def get(self, request):
-#
-#         products = Storage.objects.all()
-#
-#         serializer = StorageListSerializer(products, many=True)
-#
-#         return Response(serializer.data)
-#
-#     def post(self, request):
-#
-#         serializer = FavoriteCreateSerializer(data=request.data, context={'request': request})
-#
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response(serializer.data, status.HTTP_201_CREATED)
-#         return Response(status.HTTP_400_BAD_REQUEST)
 
 
 class IndexView(APIView):
@@ -118,5 +96,63 @@ class StorageDeleteView(DestroyAPIView):
     serializer_class = StorageCreateSerializer
 
 
+class BasketAddAPIView(CreateAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        # Уменьшаем количество товара на складе
+        product = instance.storage.product
+        storage = Storage.objects.get(product=product)
+
+        # Проверяем наличие товара на складе
+        if storage.quantity <= 0 or storage.status != 1:
+            raise ValidationError("Данный продукт недоступен для добавления в корзину.")
+
+        storage.quantity -= instance.quantity
+        storage.save()
 
 
+class BasketRemoveAPIView(DestroyAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+    def perform_destroy(self, instance):
+        # Увеличиваем количество товара на складе при удалении из корзины
+        product = instance.storage.product
+        storage = Storage.objects.get(product=product)
+        storage.quantity += instance.quantity
+        storage.save()
+
+
+class BasketListAPIView(ListAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+
+class BasketUpdateAPIView(UpdateAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = BasketSerializer
+
+
+# Сериализаторы без дженериков:
+
+# class ProductListView(APIView):
+#
+#     def get(self, request):
+#
+#         products = Storage.objects.all()
+#
+#         serializer = StorageListSerializer(products, many=True)
+#
+#         return Response(serializer.data)
+#
+#     def post(self, request):
+#
+#         serializer = FavoriteCreateSerializer(data=request.data, context={'request': request})
+#
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status.HTTP_201_CREATED)
+#         return Response(status.HTTP_400_BAD_REQUEST)
