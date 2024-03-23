@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Brand, Category, Image, Storage, Color, Favorite, Poster
+from .models import Product, Brand, Category, Image, Storage, Color, Favorite, Poster, Basket
 
 
 class BrandListSerializer(serializers.ModelSerializer):
@@ -78,4 +78,23 @@ class StorageCreateSerializer(serializers.ModelSerializer):
         fields = ('product', 'quantity', 'status')
 
 
+class StorageIdSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Storage
+        fields = ('product', )
+
+
+class BasketListSerializer(serializers.ModelSerializer):
+    storage_id = StorageIdSerializer
+
+    class Meta:
+        model = Basket
+        fields = ('storage_id', 'quantity', 'status')
+
+
+class BasketDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Basket
+        fields = ('storage_id', 'quantity', 'created_date', 'address', 'deliver_date')

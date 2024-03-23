@@ -129,8 +129,16 @@ class Poster(models.Model):
         return str(self.product)
 
 
-
-
-
-
-
+class Basket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    storage_id = models.ForeignKey(Storage, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(default=0)
+    address = models.CharField(max_length=225)
+    created_date = models.DateTimeField(auto_now_add=True)
+    deliver_date = models.DateTimeField()
+    status = models.PositiveSmallIntegerField(
+        choices=(
+            (1, 'В пути'),
+            (2, 'Доставлен'),
+        )
+    )
