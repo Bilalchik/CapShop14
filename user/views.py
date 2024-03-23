@@ -8,7 +8,19 @@ from .models import MyUser
 
 
 class UserCreateView(APIView):
-
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('username', openapi.IN_QUERY, description="Широта центра области",
+                              type=openapi.TYPE_NUMBER, required=True),
+            openapi.Parameter('center_lon', openapi.IN_QUERY, description="Долгота центра области",
+                              type=openapi.TYPE_NUMBER, required=True),
+            openapi.Parameter('radius', openapi.IN_QUERY, description="Радиус области (в километрах)",
+                              type=openapi.TYPE_NUMBER, required=True),
+        ],
+        responses={
+            200: openapi.Response('200 OK', UserListSerializer()),
+        }
+    )
     def get(self, request):
         users = MyUser.objects.all()
 
@@ -16,6 +28,9 @@ class UserCreateView(APIView):
 
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        request_body=UserCreateSerializer()
+    )
     def post(self, request):
 
         serializer = UserCreateSerializer(data=request.data, context={'request': request})

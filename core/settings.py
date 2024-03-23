@@ -70,11 +70,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'capshop14',  # Имя вашей базы данных
-        'USER': 'capshopuser',      # Имя вашего пользователя
-        'PASSWORD': 'password',  # Ваш пароль
+        'NAME': 'capshop',  # Имя вашей базы данных
+        'USER': 'nurbekcapshop',      # Имя вашего пользователя
+        'PASSWORD': 'admin',  # Ваш пароль
         'HOST': 'localhost',   # Хост, на котором работает PostgreSQL
-        'PORT': '5433',            # Порт (по умолчанию 5432)
+        'PORT': '5432',            # Порт (по умолчанию 5432)
     }
 }
 

@@ -17,7 +17,8 @@ from .serializers import (
     FavoriteCreateSerializer,
     PosterListSerializer,
     BrandListSerializer,
-    StorageCreateSerializer
+    StorageCreateSerializer,
+    BasketListSerializer
 )
 from .models import (
     Product,
@@ -26,7 +27,8 @@ from .models import (
     Image,
     Storage,
     Color,
-    Poster
+    Poster,
+    Basket
 )
 from .filters import StorageFilter
 from .paginations import StoragePagination
@@ -102,6 +104,21 @@ class ProductDetailView(RetrieveAPIView):
     queryset = Storage.objects.all()
     serializer_class = StorageListSerializer
 
+    def get_similar_products(self, product):
+        similar_products = Storage.objects.filter(product__category=product.product.category).exclude(product=product.product).order_by('?')[:5]
+        return similar_products
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        similar_products = self.get_similar_products(instance)
+
+        data = serializer.data
+        data['similar_products'] = StorageListSerializer(similar_products, many=True).data
+
+        return Response(data)
+
 
 class StorageCreateView(CreateAPIView):
     queryset = Storage.objects.all()
@@ -118,5 +135,29 @@ class StorageDeleteView(DestroyAPIView):
     serializer_class = StorageCreateSerializer
 
 
+class BasketListCreateView(ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        current_user = self.request.user
+        queryset = Basket.objects.filter(user=current_user)
+
+        return queryset
+
+    serializer_class = BasketListSerializer
 
 
+class BasketDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        current_user = self.request.user
+        queryset = Basket.objects.filter(user=current_user)
+
+        return queryset
+
+    serializer_class = BasketListSerializer
+
+
+class BasketDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Storage.objects.all()
+    serializer_class = BasketListSerializer
