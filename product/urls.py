@@ -9,7 +9,6 @@ urlpatterns = [
     path('storage_update/<int:pk>/', views.StorageUpdateView.as_view()),
     path('storage_delete/<int:pk>/', views.StorageDeleteView.as_view()),
     path('basket/add/', views.BasketAddAPIView.as_view(), name='basket-add'),
-    path('basket/remove/<int:pk>/', views.BasketRemoveAPIView.as_view(), name='basket-remove'),
-    path('basket/list/', views.BasketListAPIView.as_view(), name='basket-list'),
-    path('basket/update/<int:pk>/', views.BasketUpdateAPIView.as_view(), name='basket-update'),
+    path('basket/update_remove/<int:pk>/', views.BasketUpdateRemoveAPIView.as_view()),
+    path('basket/list/', views.BasketListAPIView.as_view()),
 ]

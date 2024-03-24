@@ -132,7 +132,7 @@ class Basket(models.Model):
     storage = models.ForeignKey('Storage', on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=0)
     address = models.CharField(max_length=255)
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.storage.product.title} ({self.quantity})"

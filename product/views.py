@@ -9,16 +9,15 @@ from rest_framework.generics import (
     CreateAPIView,
     UpdateAPIView,
     DestroyAPIView,
-    ListCreateAPIView, ListAPIView
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView
 )
-
 
 from .serializers import (
     StorageListSerializer,
     PosterListSerializer,
     BrandListSerializer,
     StorageCreateSerializer,
-    BasketSerializer
+    BasketListSerializer, BasketCreateSerializer
 )
 from .models import (
     Brand,
@@ -33,7 +32,6 @@ from .paginations import StoragePagination
 class IndexView(APIView):
 
     def get(self, request):
-
         # Requests
         posters = Poster.objects.all()
 
@@ -98,43 +96,42 @@ class StorageDeleteView(DestroyAPIView):
 
 class BasketAddAPIView(CreateAPIView):
     queryset = Basket.objects.all()
-    serializer_class = BasketSerializer
+    serializer_class = BasketListSerializer
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        # Уменьшаем количество товара на складе
         product = instance.storage.product
-        storage = Storage.objects.get(product=product)
-
-        # Проверяем наличие товара на складе
-        if storage.quantity <= 0 or storage.status != 1:
+        storage = Storage.objects.filter(product=product).first()
+        if not storage or storage.quantity <= 0 or storage.status != 1:
             raise ValidationError("Данный продукт недоступен для добавления в корзину.")
 
         storage.quantity -= instance.quantity
         storage.save()
 
+    # def get_queryset(self):
+    #     return BasketAddAPIView.objects.filter(user=self.request.user.id)
 
-class BasketRemoveAPIView(DestroyAPIView):
-    queryset = Basket.objects.all()
-    serializer_class = BasketSerializer
+
+class BasketListAPIView(ListCreateAPIView):
+    serializer_class = BasketListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Basket.objects.filter(user=self.request.user)
+
+
+class BasketUpdateRemoveAPIView(RetrieveUpdateDestroyAPIView):
+    # queryset = Basket.objects.all()
+    serializer_class = BasketCreateSerializer
 
     def perform_destroy(self, instance):
-        # Увеличиваем количество товара на складе при удалении из корзины
         product = instance.storage.product
         storage = Storage.objects.get(product=product)
         storage.quantity += instance.quantity
         storage.save()
 
-
-class BasketListAPIView(ListAPIView):
-    queryset = Basket.objects.all()
-    serializer_class = BasketSerializer
-
-
-class BasketUpdateAPIView(UpdateAPIView):
-    queryset = Basket.objects.all()
-    serializer_class = BasketSerializer
-
+    def get_queryset(self):
+        return Basket.objects.filter(user=self.request.user)
 
 # Сериализаторы без дженериков:
 
