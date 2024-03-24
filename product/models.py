@@ -2,8 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.exceptions import ValidationError
 
-
-
 User = get_user_model()
 
 
@@ -129,8 +127,12 @@ class Poster(models.Model):
         return str(self.product)
 
 
+class Basket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    storage = models.ForeignKey('Storage', on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField(default=0)
+    address = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-
-
-
-
+    def __str__(self):
+        return f"{self.storage.product.title} ({self.quantity})"

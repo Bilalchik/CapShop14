@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Brand, Category, Image, Storage, Color, Favorite, Poster
+from .models import Product, Brand, Category, Storage, Favorite, Poster, Basket
 
 
 class BrandListSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class BrandListSerializer(serializers.ModelSerializer):
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('title', )
+        fields = ('title',)
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class StorageListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Storage
-        fields = ('product', )
+        fields = ('product',)
 
 
 class FavoriteCreateSerializer(serializers.ModelSerializer):
@@ -49,7 +49,6 @@ class FavoriteCreateSerializer(serializers.ModelSerializer):
 
 
 class ProductPosterSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Product
         fields = ('title', 'main_cover')
@@ -60,7 +59,7 @@ class StoragePosterListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Storage
-        fields = ('product', )
+        fields = ('product',)
 
 
 class PosterListSerializer(serializers.ModelSerializer):
@@ -72,10 +71,22 @@ class PosterListSerializer(serializers.ModelSerializer):
 
 
 class StorageCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Storage
         fields = ('product', 'quantity', 'status')
 
 
+class BasketListSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
+    class Meta:
+        model = Basket
+        fields = '__all__'
+
+
+class BasketCreateSerializer(serializers.ModelSerializer):
+    #   user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Basket
+        fields = '__all__'
